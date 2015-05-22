@@ -52,7 +52,9 @@ public class MBRobot extends AdvancedRobot {
 	private void makePiqleSelector() {
 		System.out.println("NEW SELECTOR");
 		selector = new QLearningSelector();
+		// the probability of choosing an action at random in the e-greedy case 
 		selector.setEpsilon(.3);
+		// Factor by which we multiply alpha at each learning step
 		selector.setGeometricAlphaDecay();
 	}
 
