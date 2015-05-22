@@ -4,17 +4,19 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.7"/>
 	<classpathentry kind="lib" path="libs/codesize-1.1.jar"/>
 	<classpathentry kind="lib" path="libs/picocontainer-2.14.2.jar"/>
-	<classpathentry kind="lib" path="/home/szymon/dev/robocode/workspace/PiqleBotUpgraded/libs/robocode.battle-1.9.2.4.jar"/>
-	<classpathentry kind="lib" path="/home/szymon/dev/robocode/workspace/PiqleBotUpgraded/libs/robocode.core-1.9.2.4.jar"/>
-	<classpathentry kind="lib" path="/home/szymon/dev/robocode/workspace/PiqleBotUpgraded/libs/robocode.host-1.9.2.4.jar"/>
-	<classpathentry kind="lib" path="/home/szymon/dev/robocode/workspace/PiqleBotUpgraded/libs/robocode.repository-1.9.2.4.jar"/>
-	<classpathentry kind="lib" path="/home/szymon/dev/robocode/workspace/PiqleBotUpgraded/libs/robocode.sound-1.9.2.4.jar"/>
-	<classpathentry kind="lib" path="/home/szymon/dev/robocode/workspace/PiqleBotUpgraded/libs/robocode.ui.editor-1.9.2.4.jar"/>
-	<classpathentry kind="lib" path="/home/szymon/dev/robocode/workspace/PiqleBotUpgraded/libs/robocode.ui-1.9.2.4.jar"/>
-	<classpathentry kind="lib" path="/home/szymon/dev/robocode/workspace/PiqleBotUpgraded/libs/codesize-1.1.jar"/>
-	<classpathentry kind="lib" path="/home/szymon/dev/robocode/workspace/PiqleBotUpgraded/libs/picocontainer-2.14.2.jar"/>
-	<classpathentry kind="lib" path="/home/szymon/dev/robocode/workspace/PiqleBotUpgraded/libs/piqle.jar"/>
-	<classpathentry kind="lib" path="/home/szymon/dev/robocode/workspace/PiqleBotUpgraded/libs/robocode.jar"/>
-	<classpathentry kind="lib" path="/home/szymon/dev/robocode/workspace/PiqleBotUpgraded/libs/roborumble.jar"/>
+	<classpathentry kind="lib" path="libs/piqle.jar"/>
+	<classpathentry kind="lib" path="libs/robocode.battle-1.9.2.4.jar"/>
+	<classpathentry kind="lib" path="libs/robocode.core-1.9.2.4.jar"/>
+	<classpathentry kind="lib" path="libs/robocode.host-1.9.2.4.jar"/>
+	<classpathentry kind="lib" path="libs/robocode.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="http://robocode.sourceforge.net/docs/robocode/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="libs/robocode.repository-1.9.2.4.jar"/>
+	<classpathentry kind="lib" path="libs/robocode.sound-1.9.2.4.jar"/>
+	<classpathentry kind="lib" path="libs/robocode.ui-1.9.2.4.jar"/>
+	<classpathentry kind="lib" path="libs/robocode.ui.editor-1.9.2.4.jar"/>
+	<classpathentry kind="lib" path="libs/roborumble.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
