@@ -17,7 +17,7 @@ public class RobotMovement implements IRobotMovement {
 	private double middleRobotWidth;
 
 	private boolean gunAdjustRequired;
-	private double gunAgle;
+	private double gunAngle;
 
 	public RobotMovement(AdvancedRobot robot) {
 		super();
@@ -42,14 +42,18 @@ public class RobotMovement implements IRobotMovement {
 	}
 	
 	public void onScannedRobot(ScannedRobotEvent e) {
-		gunAgle = normalRelativeAngleDegrees(e.getBearing()
+		gunAngle = normalRelativeAngleDegrees(e.getBearing()
 				+ (robot.getHeading() - robot.getRadarHeading()));
 		gunAdjustRequired = true;
+	}
+	
+	public double getGunAngle() {
+		return gunAngle;
 	}
 
 	private void adjustGunAndSetOut() {
 		if (gunAdjustRequired)
-			robot.setTurnGunRight(gunAgle);
+			robot.setTurnGunRight(gunAngle);
 		else
 			robot.setTurnGunRight(360);
 		if (direction.equals(Direction.FORWARD))

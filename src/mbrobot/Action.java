@@ -26,12 +26,6 @@ public class Action implements IAction {
 	}
 
 	@Override
-	protected Object clone() throws CloneNotSupportedException {
-		// TODO Auto-generated method stub
-		return super.clone();
-	}
-
-	@Override
 	public int hashCode() {
 		return this.shoot ? 1 : 0;
 	}

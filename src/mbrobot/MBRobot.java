@@ -1,7 +1,5 @@
 package mbrobot;
 
-import static robocode.util.Utils.normalRelativeAngleDegrees;
-
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -23,7 +21,7 @@ import algorithms.QLearningSelector;
 
 public class MBRobot extends AdvancedRobot {
 
-	private IRobotMovement moveBehaviour;
+	private IRobotMovement movementControl;
 
 	private int missed;
 	private int hits;
@@ -32,9 +30,12 @@ public class MBRobot extends AdvancedRobot {
 
 	private HashMap<Bullet, SavedState> firedBullets;
 	private Bullet lastFired;
+	
+	private static final double MISSED_REWARD = -1.20;
+	private static final double HIT_REWARD = 24.0;
 
 	public void run() {
-		moveBehaviour = new RobotMovement(this);
+		movementControl = new RobotMovement(this);
 		missed = 0;
 		hits = 0;
 
@@ -46,7 +47,7 @@ public class MBRobot extends AdvancedRobot {
 
 		firedBullets = new HashMap<Bullet, SavedState>();
 		
-		moveBehaviour.move();
+		movementControl.move();
 	}
 
 	private void makePiqleSelector() {
@@ -122,17 +123,8 @@ public class MBRobot extends AdvancedRobot {
 		Bullet b = event.getBullet();
 		if (!firedBullets.containsKey(b))
 			return;
-
-		State nextState = null;
-		if (firedBullets.get(b).nextState != null) {
-			nextState = firedBullets.get(b).nextState;
-		} else {
-			nextState = firedBullets.get(b).currentState;
-		}
-		assert (nextState != null);
-		selector.learn(firedBullets.get(b).currentState, nextState, new Action(
-				true), 24.0);
-		firedBullets.remove(event.getBullet());
+		updateNextStateForBulletEventAndLearn(b, HIT_REWARD);
+		firedBullets.remove(b);
 		++hits;
 	}
 
@@ -141,6 +133,20 @@ public class MBRobot extends AdvancedRobot {
 		Bullet b = event.getBullet();
 		if (!firedBullets.containsKey(b))
 			return;
+		updateNextStateForBulletEventAndLearn(b, MISSED_REWARD);
+		firedBullets.remove(b);
+		missed++;
+	}
+
+	public void onScannedRobot(ScannedRobotEvent e) {
+		movementControl.onScannedRobot(e);
+		State state = createStateOnScannedRobot(e);
+		updateStateOnScannedRobot(state);
+		chooseTheBestActionOnScannedRobotAndLearn(state);
+
+	}
+	
+	private void updateNextStateForBulletEventAndLearn(Bullet b, double reward) {
 		State nextState = null;
 		if (firedBullets.get(b).nextState != null) {
 			nextState = firedBullets.get(b).nextState;
@@ -149,32 +155,29 @@ public class MBRobot extends AdvancedRobot {
 		}
 		assert (nextState != null);
 		selector.learn(firedBullets.get(b).currentState,
-				nextState, new Action(true), -12.0);
-		firedBullets.remove(event.getBullet());
-		missed++;
+				nextState, new Action(true), reward);
 	}
 
-	public void onScannedRobot(ScannedRobotEvent e) {
-		
-		moveBehaviour.onScannedRobot(e);
-
-		double gunAdjust = normalRelativeAngleDegrees(e.getBearing()
-				+ (getHeading() - getRadarHeading()));
-
-		State state = new State(gunAdjust, e.getVelocity(),
-				e.getHeading(), e.getDistance());
-		// Update last fired
-		SavedState lastFiredState = firedBullets.get(lastFired);
-		if (lastFiredState != null && lastFiredState.nextState == null)
-			lastFiredState.nextState = state;
+	private void chooseTheBestActionOnScannedRobotAndLearn(State state) {
 		Action action = (Action) selector.bestAction(state);
 		if (action.shoot) {
 			lastFired = fireBullet(1);
+			// the last fired is used in missed or hit events
 			firedBullets.put(lastFired, new SavedState(state, null));
 		} else {
 			selector.learn(state, state, new Action(false), -1.0);
 		}
+	}
 
+	private void updateStateOnScannedRobot(State state) {
+		SavedState lastFiredState = firedBullets.get(lastFired);
+		if (lastFiredState != null && lastFiredState.nextState == null)
+			lastFiredState.nextState = state;
+	}
+	
+	private State createStateOnScannedRobot(ScannedRobotEvent e) {
+		double gunAngle = movementControl.getGunAngle();
+		return new State(gunAngle, e.getVelocity(), e.getHeading(), e.getDistance());
 	}
 
 	private class SavedState {
