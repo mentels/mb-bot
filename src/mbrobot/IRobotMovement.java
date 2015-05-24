@@ -2,7 +2,7 @@ package mbrobot;
 
 import robocode.ScannedRobotEvent;
 
-public interface IMoveBehaviour {
+public interface IRobotMovement {
 
 	public void move();
 

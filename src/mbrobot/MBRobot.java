@@ -23,7 +23,7 @@ import algorithms.QLearningSelector;
 
 public class MBRobot extends AdvancedRobot {
 
-	private IMoveBehaviour moveBehaviour;
+	private IRobotMovement moveBehaviour;
 
 	private int missed;
 	private int hits;
@@ -34,7 +34,7 @@ public class MBRobot extends AdvancedRobot {
 	private Bullet lastFired;
 
 	public void run() {
-		moveBehaviour = new ErraticMoveBehaviour(this);
+		moveBehaviour = new RobotMovement(this);
 		missed = 0;
 		hits = 0;
 
