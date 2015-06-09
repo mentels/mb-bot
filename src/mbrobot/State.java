@@ -33,8 +33,9 @@ public class State implements IState {
 	@Override
 	public ActionList getActionList() {
 		ActionList a = new ActionList(this);
-		a.add(new Action(false));
-		a.add(new Action(true));
+		a.add(new FireWithPowerAction(FireWithPowerAction.VALUE_1));
+		a.add(new FireWithPowerAction(FireWithPowerAction.VALUE_2));
+		a.add(new FireWithPowerAction(FireWithPowerAction.VALUE_3));
 		return a;
 	}
 

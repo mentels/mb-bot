@@ -6,7 +6,6 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.PrintWriter;
-import java.util.HashMap;
 
 import robocode.AdvancedRobot;
 import robocode.BattleEndedEvent;
@@ -28,11 +27,13 @@ public class MBRobot extends AdvancedRobot {
 
 	private QLearningSelector selector;
 
-	private HashMap<Bullet, SavedState> firedBullets;
-	private Bullet lastFired;
+	private State beforeLastFiredBulletState;
+	private Bullet lastFiredBullet;
+	private double lastFiredBulletReward;
 	
-	private static final double MISSED_REWARD = -1.20;
-	private static final double HIT_REWARD = 24.0;
+	
+	private static final double MISSED_REWARD = PropertiesReader.getInstance().getMissedReward();
+	private static final double HIT_REWARD = PropertiesReader.getInstance().getHitReward();
 
 	public void run() {
 		movementControl = new RobotMovement(this);
@@ -44,8 +45,6 @@ public class MBRobot extends AdvancedRobot {
 		} catch (IOException | ClassNotFoundException _) {
 			makePiqleSelector();
 		}
-
-		firedBullets = new HashMap<Bullet, SavedState>();
 		
 		movementControl.move();
 	}
@@ -120,59 +119,37 @@ public class MBRobot extends AdvancedRobot {
 
 	@Override
 	public void onBulletHit(BulletHitEvent event) {
-		Bullet b = event.getBullet();
-		if (!firedBullets.containsKey(b))
-			return;
-		updateNextStateForBulletEventAndLearn(b, HIT_REWARD);
-		firedBullets.remove(b);
+		lastFiredBulletReward = HIT_REWARD;
 		++hits;
 	}
 
 	@Override
 	public void onBulletMissed(BulletMissedEvent event) {
-		Bullet b = event.getBullet();
-		if (!firedBullets.containsKey(b))
-			return;
-		updateNextStateForBulletEventAndLearn(b, MISSED_REWARD);
-		firedBullets.remove(b);
+		lastFiredBulletReward = MISSED_REWARD;
 		missed++;
 	}
 
+	@Override
 	public void onScannedRobot(ScannedRobotEvent e) {
 		movementControl.onScannedRobot(e);
 		State state = createStateOnScannedRobot(e);
-		updateStateOnScannedRobot(state);
-		chooseTheBestActionOnScannedRobotAndLearn(state);
-
+		learnBasedOnLastFiredBullet(state);
+		fireOnScannedRobotAndUpdateLastFiredBullet(state);
 	}
 	
-	private void updateNextStateForBulletEventAndLearn(Bullet b, double reward) {
-		State nextState = null;
-		if (firedBullets.get(b).nextState != null) {
-			nextState = firedBullets.get(b).nextState;
-		} else {
-			nextState = firedBullets.get(b).currentState;
-		}
-		assert (nextState != null);
-		selector.learn(firedBullets.get(b).currentState,
-				nextState, new Action(true), reward);
-	}
-
-	private void chooseTheBestActionOnScannedRobotAndLearn(State state) {
-		Action action = (Action) selector.bestAction(state);
-		if (action.shoot) {
-			lastFired = fireBullet(1);
-			// the last fired is used in missed or hit events
-			firedBullets.put(lastFired, new SavedState(state, null));
-		} else {
-			selector.learn(state, state, new Action(false), -1.0);
+	private void learnBasedOnLastFiredBullet(State currentState) {
+		if(lastFiredBullet != null) {
+			FireWithPowerAction lastAction = 
+					new FireWithPowerAction(lastFiredBullet.getPower());
+			selector.learn(beforeLastFiredBulletState, currentState, lastAction, 
+					lastFiredBulletReward);
 		}
 	}
 
-	private void updateStateOnScannedRobot(State state) {
-		SavedState lastFiredState = firedBullets.get(lastFired);
-		if (lastFiredState != null && lastFiredState.nextState == null)
-			lastFiredState.nextState = state;
+	private void fireOnScannedRobotAndUpdateLastFiredBullet(State state) {
+		FireWithPowerAction action = (FireWithPowerAction) selector.bestAction(state);
+		beforeLastFiredBulletState = state;
+		lastFiredBullet = fireBullet(action.power);
 	}
 	
 	private State createStateOnScannedRobot(ScannedRobotEvent e) {
@@ -180,13 +157,4 @@ public class MBRobot extends AdvancedRobot {
 		return new State(gunAngle, e.getVelocity(), e.getHeading(), e.getDistance());
 	}
 
-	private class SavedState {
-		public State currentState;
-		public State nextState;
-
-		public SavedState(State currentState, State nextState) {
-			this.currentState = currentState;
-			this.nextState = nextState;
-		}
-	}
 }
