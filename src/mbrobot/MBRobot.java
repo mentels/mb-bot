@@ -53,9 +53,13 @@ public class MBRobot extends AdvancedRobot {
 		System.out.println("NEW SELECTOR");
 		selector = new QLearningSelector();
 		// the probability of choosing an action at random in the e-greedy case 
-		selector.setEpsilon(.3);
+		selector.setEpsilon(PropertiesReader.getInstance().getEpsilon());
 		// Factor by which we multiply alpha at each learning step
-		selector.setGeometricAlphaDecay();
+		if(PropertiesReader.getInstance().getAlphaDecay() == "geometric") {
+			selector.setGeometricAlphaDecay();	
+		} else {
+			selector.setExponentialAlphaDecay();
+		}
 	}
 
 	private void loadPiqleSelector() throws FileNotFoundException, IOException,

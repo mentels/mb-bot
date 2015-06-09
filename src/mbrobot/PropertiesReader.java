@@ -49,4 +49,12 @@ public class PropertiesReader {
 //		return Integer.parseInt(prop.getProperty("power_factor"));
 		return 2;
 	}
+
+	public double getEpsilon() {
+		return 0.3;
+	}
+
+	public String getAlphaDecay() {
+		return "geometric";
+	}
 }
