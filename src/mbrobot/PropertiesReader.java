@@ -37,21 +37,21 @@ public class PropertiesReader {
 	
 	public double getMissedReward() {
 //		return Double.parseDouble(prop.getProperty("missed_reward"));
-		return -1.20;
+		return -10;
 	}
 	
 	public double getHitReward() {
 //		return Double.parseDouble(prop.getProperty("hit_reward"));
-		return 24.0;
+		return 25;
 	}
 	
 	public int getFirePowerFactor() {
 //		return Integer.parseInt(prop.getProperty("power_factor"));
-		return 2;
+		return 5;
 	}
 
 	public double getEpsilon() {
-		return 0.3;
+		return 0.1;
 	}
 
 	public String getAlphaDecay() {

@@ -1,6 +1,5 @@
 package mbrobot;
 
-import static robocode.util.Utils.normalRelativeAngleDegrees;
 import robocode.AdvancedRobot;
 import robocode.ScannedRobotEvent;
 
@@ -18,6 +17,8 @@ public class RobotMovement implements IRobotMovement {
 
 	private boolean gunAdjustRequired;
 	private double gunAngle;
+
+	private double oldEnemyHeading;
 
 	public RobotMovement(AdvancedRobot robot) {
 		super();
@@ -40,26 +41,82 @@ public class RobotMovement implements IRobotMovement {
 			robot.execute();
 		}
 	}
-	
+
 	public void onScannedRobot(ScannedRobotEvent e) {
-		gunAngle = normalRelativeAngleDegrees(e.getBearing()
-				+ (robot.getHeading() - robot.getRadarHeading()));
-		gunAdjustRequired = true;
+//		double bulletPower = Math.min(3.0, robot.getEnergy());
+//		double myX = robot.getX();
+//		double myY = robot.getY();
+//		double absoluteBearing = robot.getHeadingRadians()
+//				+ e.getBearingRadians();
+//		double enemyX = robot.getX() + e.getDistance()
+//				* Math.sin(absoluteBearing);
+//		double enemyY = robot.getY() + e.getDistance()
+//				* Math.cos(absoluteBearing);
+//		double enemyHeading = e.getHeadingRadians();
+//		double enemyHeadingChange = enemyHeading - oldEnemyHeading;
+//		double enemyVelocity = e.getVelocity();
+//		oldEnemyHeading = enemyHeading;
+//
+//		double deltaTime = 0;
+//		double battleFieldHeight = robot.getBattleFieldHeight(), battleFieldWidth = robot
+//				.getBattleFieldWidth();
+//		double predictedX = enemyX, predictedY = enemyY;
+//		while ((++deltaTime) * (20.0 - 3.0 * bulletPower) < Point2D.Double
+//				.distance(myX, myY, predictedX, predictedY)) {
+//			predictedX += Math.sin(enemyHeading) * enemyVelocity;
+//			predictedY += Math.cos(enemyHeading) * enemyVelocity;
+//			enemyHeading += enemyHeadingChange;
+//			if (predictedX < 18.0 || predictedY < 18.0
+//					|| predictedX > battleFieldWidth - 18.0
+//					|| predictedY > battleFieldHeight - 18.0) {
+//
+//				predictedX = Math.min(Math.max(18.0, predictedX),
+//						battleFieldWidth - 18.0);
+//				predictedY = Math.min(Math.max(18.0, predictedY),
+//						battleFieldHeight - 18.0);
+//				break;
+//			}
+//		}
+//		double theta = Utils.normalAbsoluteAngle(Math.atan2(
+//				predictedX - robot.getX(), predictedY - robot.getY()));
+//
+//		robot.setTurnRadarRightRadians(Utils
+//				.normalRelativeAngle(absoluteBearing
+//						- robot.getRadarHeadingRadians()));
+//		robot.setTurnGunRightRadians(Utils.normalRelativeAngle(theta
+//				- robot.getGunHeadingRadians()));
+		//robot.execute();
+		// gunAngle = normalRelativeAngleDegrees(e.getBearing()
+		// + (robot.getHeading() - robot.getRadarHeading()));
+		// gunAdjustRequired = true;
+		
+		this.lastTime = robot.getTime();
 	}
-	
+
 	public double getGunAngle() {
 		return gunAngle;
 	}
 
+	long lastTime;
+
 	private void adjustGunAndSetOut() {
-		if (gunAdjustRequired)
-			robot.setTurnGunRight(gunAngle);
-		else
-			robot.setTurnGunRight(360);
-		if (direction.equals(Direction.FORWARD))
-			robot.setAhead(500);
-		else
-			robot.setBack(500);
+		// if (gunAdjustRequired) {
+		// robot.setTurnGunRight(gunAngle);
+		// robot.setTurnRadarRight(gunAngle);
+		// } else {
+//
+		if (robot.getGunTurnRemaining() == 0) {
+			if (robot.getTime() > lastTime + 10) {
+				robot.setTurnGunRight(10);
+			}
+		}
+//		if (robot.getRadarTurnRemaining() == 0)
+//			robot.setTurnRadarRight(360);
+		// }
+//		if (direction.equals(Direction.FORWARD))
+//			robot.setAhead(500);
+//		else
+//			robot.setBack(500);
 	}
 
 	private void moveOppositeDirection() {
@@ -73,10 +130,12 @@ public class RobotMovement implements IRobotMovement {
 	private boolean isRobotHeadingWall() {
 		double x = robot.getX();
 		double y = robot.getY();
-		return x < 20 + middleRobotWidth || x > fileldwidth - middleRobotWidth - 20
-				|| y < 20 + middleRobotHeight || y > fieldHeight - middleRobotHeight - 20;
+		return x < 20 + middleRobotWidth
+				|| x > fileldwidth - middleRobotWidth - 20
+				|| y < 20 + middleRobotHeight
+				|| y > fieldHeight - middleRobotHeight - 20;
 	}
-	
+
 	private void moveVertically() {
 		double heading = robot.getHeading();
 		if (heading == 0.0 || heading == 180.0)
@@ -94,10 +153,10 @@ public class RobotMovement implements IRobotMovement {
 }
 
 enum Direction {
-	FORWARD,
-	BACKWARD;
+	FORWARD, BACKWARD;
 	private static Direction[] vals = values();
+
 	public Direction next() {
-		return vals[(this.ordinal()+1) % vals.length];
+		return vals[(this.ordinal() + 1) % vals.length];
 	}
 }

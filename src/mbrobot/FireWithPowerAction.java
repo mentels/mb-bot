@@ -8,21 +8,15 @@ public class FireWithPowerAction implements IAction {
 	
 	private static final long serialVersionUID = 1L;
 
-	public double power;
+	public int rotateRight;
 	
-	public static final int VALUE_1 = 1;
-	
-	public static final int VALUE_2 = VALUE_1 * factor;
-	
-	public static final int VALUE_3 = VALUE_2 * factor;
-
-	public FireWithPowerAction(double power) {
-		this.power = power;
+	public FireWithPowerAction(int rotateRight) {
+		this.rotateRight = rotateRight;
 	}
 
 	@Override
 	public Object copy() {
-		return new FireWithPowerAction(power);
+		return new FireWithPowerAction(rotateRight);
 	}
 
 	@Override
@@ -30,12 +24,12 @@ public class FireWithPowerAction implements IAction {
 		if (!(o instanceof FireWithPowerAction))
 			return false;
 		FireWithPowerAction a = (FireWithPowerAction) o;
-		return (this.power == a.power);
+		return (this.rotateRight == a.rotateRight);
 	}
 
 	@Override
 	public int hashCode() {
-		return (int) this.power;
+		return (int) this.rotateRight;
 	}
 
 	@Override
@@ -46,8 +40,7 @@ public class FireWithPowerAction implements IAction {
 	@Override
 	public double[] nnCoding() {
 		double code[] = new double[1];
-		code[0] = (double) power;
+		code[0] = (double) rotateRight;
 		return code;
 	}
-
 }

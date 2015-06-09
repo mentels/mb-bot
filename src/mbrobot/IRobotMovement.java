@@ -9,5 +9,4 @@ public interface IRobotMovement {
 	public void onScannedRobot(ScannedRobotEvent e);
 	
 	public double getGunAngle();
-
 }

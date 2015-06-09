@@ -9,8 +9,8 @@ public class State implements IState {
 
 	public State(double gunAngle, double enemyVelocity, double enemyAngle,
 			double enemyDistance) {
-		this.gunAngle = (int) Math.round(gunAngle * 100);
-		this.enemyAngle = (int) Math.round(enemyAngle);
+		this.setGunAngle(gunAngle);
+		this.setEnemyAngle(enemyAngle);
 		this.enemyMoving = enemyVelocity > 0.0;
 		this.enemyDistance = calculateDistance(enemyDistance);
 	}
@@ -21,6 +21,14 @@ public class State implements IState {
 		this.enemyMoving = enemyMoving;
 		this.enemyAngle = enemyAngle;
 		this.enemyDistance = enemyDistance;
+	}
+	
+	public void setGunAngle(double degree) {
+		this.gunAngle = (int) Math.round(degree / 10) % 36;
+	}
+	
+	public void setEnemyAngle(double degree) {
+		this.enemyAngle = (int) Math.round(degree / 10) % 36;
 	}
 
 	private static final long serialVersionUID = 1L;
@@ -33,9 +41,9 @@ public class State implements IState {
 	@Override
 	public ActionList getActionList() {
 		ActionList a = new ActionList(this);
-		a.add(new FireWithPowerAction(FireWithPowerAction.VALUE_1));
-		a.add(new FireWithPowerAction(FireWithPowerAction.VALUE_2));
-		a.add(new FireWithPowerAction(FireWithPowerAction.VALUE_3));
+		for (int i = 0; i <= 10; i++) {
+			a.add(new FireWithPowerAction(i));
+		}
 		return a;
 	}
 
