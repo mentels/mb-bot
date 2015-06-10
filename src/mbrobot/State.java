@@ -24,7 +24,7 @@ public class State implements IState {
 	}
 	
 	public void setGunAngle(double degree) {
-		this.gunAngle = (int) Math.round(degree / 10) % 36;
+		this.gunAngle = (int) Math.round(degree / 1) % 360;
 	}
 	
 	public void setEnemyAngle(double degree) {
@@ -42,7 +42,7 @@ public class State implements IState {
 	public ActionList getActionList() {
 		ActionList a = new ActionList(this);
 		for (int i = 0; i <= 10; i++) {
-			a.add(new FireWithPowerAction(i));
+			a.add(new RotateGunAction(i));
 		}
 		return a;
 	}

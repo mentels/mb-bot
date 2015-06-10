@@ -14,17 +14,12 @@ public class RobotMovement implements IRobotMovement {
 
 	private double middleRobotHeight;
 	private double middleRobotWidth;
-
-	private boolean gunAdjustRequired;
 	private double gunAngle;
-
-	private double oldEnemyHeading;
 
 	public RobotMovement(AdvancedRobot robot) {
 		super();
 		this.robot = robot;
 		direction = Direction.FORWARD;
-		gunAdjustRequired = false;
 		fileldwidth = robot.getBattleFieldWidth();
 		fieldHeight = robot.getBattleFieldHeight();
 		middleRobotHeight = robot.getHeight() / 2;
@@ -43,53 +38,6 @@ public class RobotMovement implements IRobotMovement {
 	}
 
 	public void onScannedRobot(ScannedRobotEvent e) {
-//		double bulletPower = Math.min(3.0, robot.getEnergy());
-//		double myX = robot.getX();
-//		double myY = robot.getY();
-//		double absoluteBearing = robot.getHeadingRadians()
-//				+ e.getBearingRadians();
-//		double enemyX = robot.getX() + e.getDistance()
-//				* Math.sin(absoluteBearing);
-//		double enemyY = robot.getY() + e.getDistance()
-//				* Math.cos(absoluteBearing);
-//		double enemyHeading = e.getHeadingRadians();
-//		double enemyHeadingChange = enemyHeading - oldEnemyHeading;
-//		double enemyVelocity = e.getVelocity();
-//		oldEnemyHeading = enemyHeading;
-//
-//		double deltaTime = 0;
-//		double battleFieldHeight = robot.getBattleFieldHeight(), battleFieldWidth = robot
-//				.getBattleFieldWidth();
-//		double predictedX = enemyX, predictedY = enemyY;
-//		while ((++deltaTime) * (20.0 - 3.0 * bulletPower) < Point2D.Double
-//				.distance(myX, myY, predictedX, predictedY)) {
-//			predictedX += Math.sin(enemyHeading) * enemyVelocity;
-//			predictedY += Math.cos(enemyHeading) * enemyVelocity;
-//			enemyHeading += enemyHeadingChange;
-//			if (predictedX < 18.0 || predictedY < 18.0
-//					|| predictedX > battleFieldWidth - 18.0
-//					|| predictedY > battleFieldHeight - 18.0) {
-//
-//				predictedX = Math.min(Math.max(18.0, predictedX),
-//						battleFieldWidth - 18.0);
-//				predictedY = Math.min(Math.max(18.0, predictedY),
-//						battleFieldHeight - 18.0);
-//				break;
-//			}
-//		}
-//		double theta = Utils.normalAbsoluteAngle(Math.atan2(
-//				predictedX - robot.getX(), predictedY - robot.getY()));
-//
-//		robot.setTurnRadarRightRadians(Utils
-//				.normalRelativeAngle(absoluteBearing
-//						- robot.getRadarHeadingRadians()));
-//		robot.setTurnGunRightRadians(Utils.normalRelativeAngle(theta
-//				- robot.getGunHeadingRadians()));
-		//robot.execute();
-		// gunAngle = normalRelativeAngleDegrees(e.getBearing()
-		// + (robot.getHeading() - robot.getRadarHeading()));
-		// gunAdjustRequired = true;
-		
 		this.lastTime = robot.getTime();
 	}
 
@@ -100,23 +48,11 @@ public class RobotMovement implements IRobotMovement {
 	long lastTime;
 
 	private void adjustGunAndSetOut() {
-		// if (gunAdjustRequired) {
-		// robot.setTurnGunRight(gunAngle);
-		// robot.setTurnRadarRight(gunAngle);
-		// } else {
-//
 		if (robot.getGunTurnRemaining() == 0) {
 			if (robot.getTime() > lastTime + 10) {
 				robot.setTurnGunRight(10);
 			}
 		}
-//		if (robot.getRadarTurnRemaining() == 0)
-//			robot.setTurnRadarRight(360);
-		// }
-//		if (direction.equals(Direction.FORWARD))
-//			robot.setAhead(500);
-//		else
-//			robot.setBack(500);
 	}
 
 	private void moveOppositeDirection() {

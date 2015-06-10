@@ -17,24 +17,15 @@ import robocode.BulletHitEvent;
 import robocode.BulletMissedEvent;
 import robocode.RobocodeFileOutputStream;
 import robocode.RobocodeFileWriter;
-import robocode.Robot;
 import robocode.RoundEndedEvent;
 import robocode.ScannedRobotEvent;
-import robocode.control.RobotSetup;
 import algorithms.QLearningSelector;
 
 public class MBRobot extends AdvancedRobot {
-
 	private IRobotMovement movementControl;
-
 	private int missed;
 	private int hits;
-
 	private QLearningSelector selector;
-
-	// private State beforeLastFiredBulletState;
-	// private Bullet lastFiredBullet;
-	// private double lastFiredBulletReward;
 
 	private static final double MISSED_REWARD = PropertiesReader.getInstance()
 			.getMissedReward();
@@ -60,7 +51,6 @@ public class MBRobot extends AdvancedRobot {
 		selector = new QLearningSelector();
 		// the probability of choosing an action at random in the e-greedy case
 		selector.setEpsilon(PropertiesReader.getInstance().getEpsilon());
-		selector.setAlpha(1);
 		// Factor by which we multiply alpha at each learning step
 		if (PropertiesReader.getInstance().getAlphaDecay() == "geometric") {
 			selector.setGeometricAlphaDecay();
@@ -84,17 +74,6 @@ public class MBRobot extends AdvancedRobot {
 
 	private String shootingStatsFileLocation() {
 		return getDataFile("shooting.csv").toString();
-	}
-
-	private void log(String s) {
-		try {
-			PrintWriter writer = new PrintWriter(new RobocodeFileWriter(
-					getDataFile("log.log").toString(), true));
-			writer.write(s + "\n");
-			writer.close();
-		} catch (IOException e) {
-			throw new RuntimeException(e);
-		}
 	}
 
 	@Override
@@ -173,41 +152,31 @@ public class MBRobot extends AdvancedRobot {
 
 	private Map<Bullet, State> bulletToStateMap = new HashMap<Bullet, State>();
 	private Map<Bullet, State> bulletToNextStateMap = new HashMap<Bullet, State>();
-	private Map<Bullet, FireWithPowerAction> bulletToActionMap = new HashMap<Bullet, FireWithPowerAction>();
+	private Map<Bullet, RotateGunAction> bulletToActionMap = new HashMap<Bullet, RotateGunAction>();
 
 	@Override
 	public void onScannedRobot(ScannedRobotEvent e) {
 		movementControl.onScannedRobot(e);
-		//setTurnGunRight(0);
-		
-//		while (getTurnRemaining() != 0 ) {
-//			execute();
-//		}
-		
-		
+
 		State state = createStateOnScannedRobot(e);
 		State newState = createStateOnScannedRobot(e);
-		FireWithPowerAction action = (FireWithPowerAction) selector
+		RotateGunAction action = (RotateGunAction) selector
 				.bestAction(state);
-		// beforeLastFiredBulletState = state;
 		double rotate = (action.rotateRight - 5) * 2;
-		log(rotate + "");
 		turnGunRight(rotate);
-		while (getTurnRemaining() != 0 ) {
+		while (getTurnRemaining() != 0) {
 			execute();
 		}
-		
+
 		Bullet b = fireBullet(3);
 		execute();
 		bulletToStateMap.put(b, state);
 		newState.setGunAngle(newState.gunAngle - rotate);
-		// log("scanned");
 		bulletToNextStateMap.put(b, newState);
 		bulletToActionMap.put(b, action);
 	}
 
 	private State createStateOnScannedRobot(ScannedRobotEvent e) {
-		// double gunAngle = movementControl.getGunAngle();
 		return new State(this.getGunHeading(), e.getVelocity(), e.getHeading(),
 				e.getDistance());
 	}

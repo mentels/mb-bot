@@ -2,28 +2,23 @@ package mbrobot;
 
 import environment.IAction;
 
-public class FireWithPowerAction implements IAction {
-	
-	private static final int factor = PropertiesReader.getInstance().getFirePowerFactor();
-	
+public class RotateGunAction implements IAction {
 	private static final long serialVersionUID = 1L;
-
 	public int rotateRight;
-	
-	public FireWithPowerAction(int rotateRight) {
+	public RotateGunAction(int rotateRight) {
 		this.rotateRight = rotateRight;
 	}
 
 	@Override
 	public Object copy() {
-		return new FireWithPowerAction(rotateRight);
+		return new RotateGunAction(rotateRight);
 	}
 
 	@Override
 	public boolean equals(Object o) {
-		if (!(o instanceof FireWithPowerAction))
+		if (!(o instanceof RotateGunAction))
 			return false;
-		FireWithPowerAction a = (FireWithPowerAction) o;
+		RotateGunAction a = (RotateGunAction) o;
 		return (this.rotateRight == a.rotateRight);
 	}
 
